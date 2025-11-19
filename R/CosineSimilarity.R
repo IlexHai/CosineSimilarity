@@ -88,6 +88,7 @@ cosine_similarity_matrix_r <- function(mat) {
 #' This function generates test data and runs timing comparisons to demonstrate
 #' the efficiency improvements of the Rcpp implementation.
 #'
+#' @importFrom stats rnorm
 #' @param sizes Vector of matrix sizes to test (number of rows)
 #' @param n_cols Number of columns in test matrices (default: 30)
 #' @param n_times Number of benchmark iterations (default: 10)

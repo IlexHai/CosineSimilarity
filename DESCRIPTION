@@ -1,5 +1,5 @@
 Package: CosineSimilarity
-Title: Efficient Cosine Similarity Calculations with cpp
+Title: Efficient Cosine Similarity Calculations with Rcpp
 Version: 1.0.0
 Authors@R: 
     person("Haoyang", "Zhou", , "ilexzhou@umich.edu", role = c("aut", "cre"))
