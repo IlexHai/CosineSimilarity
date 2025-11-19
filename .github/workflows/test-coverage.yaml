@@ -35,8 +35,7 @@ jobs:
       - name: Generate coverage JSON
         run: |
           cov <- covr::package_coverage()
-          df <- covr::as.data.frame(cov)
-          jsonlite::write_json(df, "coverage.json", auto_unbox = TRUE)
+          covr::to_file(cov, file = "coverage.json")
         shell: Rscript {0}
 
       - name: Upload coverage to Codecov
