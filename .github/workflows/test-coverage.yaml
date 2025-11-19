@@ -27,22 +27,20 @@ jobs:
             bench
           needs: coverage
 
-      # Install your package
       - name: Install package
         run: Rscript -e 'devtools::install(dependencies = TRUE)'
 
-      # Run tests
       - name: Run tests
         run: Rscript -e 'devtools::test()'
 
-      # Generate the coverage.json report
+      # Generate coverage report in Codecov v4 JSON format
       - name: Generate test coverage
         run: |
           cov <- covr::package_coverage()
-          covr::to_json(cov, "coverage.json")
+          covr::codecov(coverage = cov, path = "coverage.json", quiet = FALSE)
         shell: Rscript {0}
 
-      # Upload coverage.json to Codecov
+      # Upload the JSON file
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
