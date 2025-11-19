@@ -1,0 +1,24 @@
+Package: CosineSimilarity
+Title: Efficient Cosine Similarity Calculations with cpp
+Version: 1.0.0
+Authors@R: 
+    person("Haoyang", "Zhou", , "ilexzhou@umich.edu", role = c("aut", "cre"))
+Description: Provides efficient functions for calculating cosine
+    similarity for vectors and matrix using Rcpp, which can be applied in
+    text similarity and recommendation system.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.3
+Imports: 
+    Rcpp
+LinkingTo: 
+    Rcpp
+VignetteBuilder: knitr
+Suggests: 
+    knitr,
+    rmarkdown,
+    bench,
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3

@@ -1,0 +1,42 @@
+name: test-coverage
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test-coverage:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: r-lib/actions/setup-r@v2
+
+      - uses: r-lib/actions/setup-pandoc@v2
+
+      - uses: r-lib/actions/setup-tinytex@v2
+      
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: |
+            covr
+            testthat
+            bench
+          needs: coverage
+
+      - name: Run tests
+        run: |
+          Rscript -e 'devtools::test()'
+
+      - name: Generate test coverage
+        run: |
+          Rscript -e 'covr::codecov(line_exclusions = list("R/RcppExports.R"), quiet = FALSE)'
+        
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          fail_ci_if_error: false
+          verbose: true

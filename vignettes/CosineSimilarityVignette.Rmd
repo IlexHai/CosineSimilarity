@@ -1,0 +1,129 @@
+---
+title: "Cosine Similarity Package Demo"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Cosine Similarity Demo}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+## Introduction
+
+This vignette demonstrates the usage of the `CosineSimilarity` package and compares the Rcpp implementation against pure R functions for both correctness and efficiency.
+
+## Setup
+
+```{r setup, message=FALSE}
+library(CosineSimilarity)
+```
+
+## Basic Usage
+
+### Vector Cosine Similarity
+
+```{r basic-usage}
+# Calculate cosine similarity between two vectors
+x <- c(1, 2, 3)
+y <- c(4, 5, 6)
+
+# Using Rcpp implementation
+result_rcpp <- cosine_similarity_rcpp(x, y)
+
+# Using pure R implementation  
+result_r <- cosine_similarity_r(x, y)
+
+cat("Vector cosine similarity:\n")
+cat("Rcpp result:", result_rcpp, "\n")
+cat("R result:   ", result_r, "\n")
+```
+
+### Matrix Cosine Similarity
+
+```{r matrix-usage}
+# Create a sample matrix
+set.seed(123)
+mat <- matrix(rnorm(12), nrow = 4, ncol = 3)
+
+# Calculate similarity matrices using both methods
+similarity_rcpp <- cosine_similarity_matrix_rcpp(mat)
+similarity_r <- cosine_similarity_matrix_r(mat)
+
+cat("Sample matrix (4x3):\n")
+print(mat)
+cat("\nRcpp similarity matrix:\n")
+print(round(similarity_rcpp, 3))
+cat("\nR similarity matrix:\n")
+print(round(similarity_r, 3))
+```
+
+## Correctness Verification
+
+We verify that both implementations produce identical results using `all.equal()`.
+
+```{r correctness}
+# Test with multiple matrix sizes
+test_sizes <- list(
+  c(5, 10),
+  c(20, 15), 
+  c(50, 30)
+)
+
+cat("Correctness Verification using all.equal():\n")
+cat("==========================================\n\n")
+
+for (i in seq_along(test_sizes)) {
+  n_rows <- test_sizes[[i]][1]
+  n_cols <- test_sizes[[i]][2]
+  
+  # Generate test data
+  set.seed(42)
+  test_mat <- matrix(rnorm(n_rows * n_cols), nrow = n_rows, ncol = n_cols)
+  
+  # Compute with both methods
+  result_rcpp <- cosine_similarity_matrix_rcpp(test_mat)
+  result_r <- cosine_similarity_matrix_r(test_mat)
+  
+  # Check correctness
+  is_correct <- all.equal(result_rcpp, result_r, tolerance = 1e-10)
+  
+  cat("Matrix", n_rows, "x", n_cols, ":\n")
+  cat("  Results identical:", is_correct, "\n\n")
+}
+```
+
+## Performance Comparison
+
+We compare the efficiency of both implementations using `bench::mark()`.
+
+```{r performance, message=FALSE}
+if (requireNamespace("bench", quietly = TRUE)) {
+  cat("Performance Comparison using bench::mark():\n")
+  
+  set.seed(42)
+  test_mat <- matrix(rnorm(100 * 30), nrow = 100, ncol = 30)
+  
+  # Run benchmark
+  bench_result <- bench::mark(
+    Rcpp = cosine_similarity_matrix_rcpp(test_mat),
+    R = cosine_similarity_matrix_r(test_mat),
+    iterations = 20,
+    check = FALSE
+  )
+  
+  print(bench_result)
+  
+  # Calculate speedup
+  time_rcpp <- as.numeric(bench_result$median[bench_result$expression == "Rcpp"])
+  time_r <- as.numeric(bench_result$median[bench_result$expression == "R"])
+  speedup <- time_r / time_rcpp
+  
+  cat("\nPerformance Summary:\n")
+  cat("Rcpp median time:", format(bench_result$median[1], digits = 3), "\n")
+  cat("R median time:   ", format(bench_result$median[2], digits = 3), "\n")
+  cat("Speedup factor:  ", round(speedup, 1), "x\n")
+  
+} else {
+  cat("Please install the 'bench' package to run performance tests.\n")
+}
+```
+

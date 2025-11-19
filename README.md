@@ -1,5 +1,7 @@
 #CosineSimilarity
 
+[![R-CMD-check](https://github.com/ilexHai/CosineSimilarity/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/ilexHai/CosineSimilarity/actions/workflows/R-CMD-check.yaml)
+[![codecov](https://codecov.io/gh/ilexHai/CosineSimilarity/branch/main/graph/badge.svg)](https://codecov.io/gh/ilexHai/CosineSimilarity)
 An R package provides efficient cosine similarity calculations between vectors and matrix using Rcpp, 
 with benchmarking to Pure R and correctness verification
 
