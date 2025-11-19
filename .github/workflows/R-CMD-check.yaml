@@ -26,16 +26,29 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      # Setup R
       - uses: r-lib/actions/setup-r@v2
         with:
           r-version: ${{ matrix.config.r }}
 
-      # Pandoc & TinyTeX (for vignettes)
       - uses: r-lib/actions/setup-pandoc@v2
-      - uses: r-lib/actions/setup-tinytex@v2
 
-      # Complete CRAN-style check (includes dependencies, caching, logs, testthat)
-      - uses: r-lib/actions/check-r-package@v2
+      - name: Install dependencies
+        run: |
+          install.packages('remotes')
+          remotes::install_deps(dependencies = TRUE)
+          remotes::install_cran("rcmdcheck")
+        shell: Rscript {0}
+
+      - name: Check
+        run: |
+          rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"),
+                               error_on = "warning",
+                               check_dir = "check")
+        shell: Rscript {0}
+
+      - name: Upload check results
+        if: failure()
+        uses: actions/upload-artifact@v3
         with:
-          upload-results: true
+          name: ${{ runner.os }}-results
+          path: check
