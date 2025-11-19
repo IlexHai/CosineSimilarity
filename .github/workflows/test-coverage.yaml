@@ -25,15 +25,18 @@ jobs:
             covr
             testthat
             bench
-          needs: coverage
+
+      - name: Install devtools
+        run: install.packages("devtools")
+        shell: Rscript {0}
 
       - name: Run tests
-        run: |
-          Rscript -e 'devtools::test()'
+        run: devtools::test()
+        shell: Rscript {0}
 
       - name: Generate test coverage
-        run: |
-          Rscript -e 'covr::codecov(line_exclusions = list("R/RcppExports.R"), quiet = FALSE)'
+        run: covr::codecov(line_exclusions = list("R/RcppExports.R"), quiet = FALSE)
+        shell: Rscript {0}
         
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
