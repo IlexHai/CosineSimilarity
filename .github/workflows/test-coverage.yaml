@@ -38,10 +38,6 @@ jobs:
         run: |
           Rscript -e "Sys.setenv('R_TESTS' = '')"
           Rscript -e "devtools::test()"
-
-      - name: Generate test coverage
-        run: |
-          Rscript -e "covr::codecov(line_exclusions = list('R/RcppExports.R'), quiet = FALSE)"
         
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
