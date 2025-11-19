@@ -19,20 +19,29 @@ jobs:
 
       - uses: r-lib/actions/setup-tinytex@v2
       
-      - uses: r-lib/actions/setup-r-dependencies@v2
+      - name: Install dependencies
+        uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: |
+            devtools
             covr
             testthat
             bench
+          needs: coverage
+
+      - name: Install and load package
+        run: |
+          Rscript -e "devtools::install(dependencies = FALSE)"
+          Rscript -e "library(CosineSimilarity)"
 
       - name: Run tests
         run: |
-          Rscript -e 'testthat::test_dir("tests/testthat")'
+          Rscript -e "Sys.setenv('R_TESTS' = '')"
+          Rscript -e "devtools::test()"
 
       - name: Generate test coverage
         run: |
-          Rscript -e 'covr::codecov(line_exclusions = list("R/RcppExports.R"), quiet = FALSE)'
+          Rscript -e "covr::codecov(line_exclusions = list('R/RcppExports.R'), quiet = FALSE)"
         
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
