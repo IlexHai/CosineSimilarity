@@ -24,24 +24,17 @@ jobs:
             covr
             testthat
             bench
-            jsonlite
 
       - name: Install package
         run: Rscript -e 'devtools::install(dependencies = TRUE)'
 
-      - name: Run tests
-        run: Rscript -e 'devtools::test()'
-
-      - name: Generate coverage JSON
+      - name: Run tests and upload coverage
         run: |
-          cov <- covr::package_coverage()
-          covr::to_file(cov, file = "coverage.json")
+          Sys.setenv(CODECOV_TOKEN = "${{ secrets.CODECOV_TOKEN }}")
+          covr::codecov(
+            quiet = FALSE,
+            token = Sys.getenv("CODECOV_TOKEN"),
+            line_exclusions = c("R/RcppExports.R", "src/RcppExports.cpp")
+          )
         shell: Rscript {0}
 
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
-        with:
-          files: coverage.json
-          token: ${{ secrets.CODECOV_TOKEN }}
-          fail_ci_if_error: false
-          verbose: true
