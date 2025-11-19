@@ -14,7 +14,6 @@ jobs:
       - uses: actions/checkout@v4
 
       - uses: r-lib/actions/setup-r@v2
-
       - uses: r-lib/actions/setup-pandoc@v2
       - uses: r-lib/actions/setup-tinytex@v2
       
@@ -25,7 +24,7 @@ jobs:
             covr
             testthat
             bench
-          needs: coverage
+            jsonlite
 
       - name: Install package
         run: Rscript -e 'devtools::install(dependencies = TRUE)'
@@ -33,17 +32,17 @@ jobs:
       - name: Run tests
         run: Rscript -e 'devtools::test()'
 
-      # Generate coverage report in Codecov v4 JSON format
-      - name: Generate test coverage
+      - name: Generate coverage JSON
         run: |
           cov <- covr::package_coverage()
-          covr::codecov(coverage = cov, path = "coverage.json", quiet = FALSE)
+          df <- covr::as.data.frame(cov)
+          jsonlite::write_json(df, "coverage.json", auto_unbox = TRUE)
         shell: Rscript {0}
 
-      # Upload the JSON file
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
           files: coverage.json
+          token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: false
           verbose: true
